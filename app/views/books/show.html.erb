@@ -25,9 +25,67 @@
           <% if @book.user.id == current_user.id %>
             <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success" %></td>
             <td><%= link_to 'Destroy', @book, method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger"%></td>
-         <%end%>
-        </tr>
+          <%end%>
+
+         <td>
+           <% if @book.favorited_by?(current_user) %>
+          <p>
+            <%= link_to book_favorites_path(@book), method: :delete do %>
+             ♥<%= @book.favorites.count %>
+            <% end %>
+          </p>
+            <% else %>
+
+          <p>
+            <%= link_to  book_favorites_path(@book), method: :post do %>
+           ♡<%= @book.favorites.count %>
+            <% end %>
+         </p>
+            <% end %>
+         </td>
+         <td>
+           <p>コメント件数：<%= @book.book_comments.count %></p>
+                <%# @book.book_comments.each do |book_comment| %>
+                  <%#= book_comment.user.name %>
+                    <%#= book_comment.created_at.strftime('%Y/%m/%d') %><%#= book_comment.comment %>
+                <%# end %>
+         </td>
+
       </table>
+        </tr>
+
+        <table>
+
+              <% @book.book_comments.each do |book_comment| %>
+              <tr>
+                <td>
+              <%= image_tag @book.user.get_profile_image(100,100) %><br>
+              <%= book_comment.user.name %>
+              </td>
+              <td>
+                <%= book_comment.comment %>
+              </td>
+
+              <td>
+                <% if book_comment.user == current_user %>
+                  <%= link_to "Destroy", book_book_comment_path(book_comment.book, book_comment), class: 'btn btn-danger', method: :delete %>
+                <% end %>
+              </td>
+
+              </tr>
+              <% end %>
+
+      </table>
+
+            <div>
+              <%= form_with model: [@book, @book_comment] do |f| %>
+                <%= f.text_area :comment, rows: '5', placeholder: "コメントをここに" %>
+                  <%= f.submit "送信" %>
+              <% end %>
+            </div>
+
+
+
     </div>
   </div>
 </div>
